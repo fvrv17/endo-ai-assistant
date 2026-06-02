@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+from .agent import DEFAULT_AGENT_MODEL, EndoAgentRun, run_endo_agent
 from .analytics import calculate_report_stats, render_report_stats
 from .evaluation import (
     EvalResult,
@@ -61,6 +62,16 @@ def main(argv: Optional[list[str]] = None) -> int:
         "--stats",
         action="store_true",
         help="Print report statistics after the rendered report.",
+    )
+    parser.add_argument(
+        "--agent",
+        action="store_true",
+        help="Run the Pydantic-AI intent agent before report extraction.",
+    )
+    parser.add_argument(
+        "--agent-model",
+        default=DEFAULT_AGENT_MODEL,
+        help="Pydantic-AI model string to use when --agent is selected.",
     )
     parser.add_argument(
         "--eval",
@@ -140,6 +151,21 @@ def main(argv: Optional[list[str]] = None) -> int:
         )
         return 0
 
+    if args.agent:
+        try:
+            agent_run = run_endo_agent(
+                user_input=raw_input,
+                exam_type=EndoscopyType(args.exam_type),
+                agent_model=args.agent_model,
+                extraction_provider=args.provider,
+                extraction_model=args.model,
+            )
+        except Exception as exc:  # noqa: BLE001 - agent setup should be readable.
+            print(f"Agent run failed: {exc}", file=sys.stderr)
+            return 1
+        print(_render_agent_run(agent_run))
+        return 0
+
     report = build_extractor(args.provider, args.model).extract(
         raw_input=raw_input,
         exam_type=EndoscopyType(args.exam_type),
@@ -159,6 +185,27 @@ def _raw_input_from_args(text: Optional[str], demo: bool) -> str:
     if not sys.stdin.isatty():
         return sys.stdin.read().strip()
     return ""
+
+
+def _render_agent_run(agent_run: EndoAgentRun) -> str:
+    lines = [
+        "Agent plan:",
+        f"- Intent: {agent_run.plan.intent.value}",
+        f"- Confidence: {agent_run.plan.confidence:.2f}",
+        f"- Summary: {agent_run.plan.summary}",
+        f"- Safety: {agent_run.plan.safety_note}",
+    ]
+
+    if agent_run.report_text is not None:
+        lines.extend(["", agent_run.report_text])
+    if agent_run.stats_text is not None:
+        lines.extend(["", agent_run.stats_text])
+    if agent_run.review_flags:
+        lines.append("")
+        lines.append("Agent-visible review flags:")
+        lines.extend(f"- {item}" for item in agent_run.review_flags)
+
+    return "\n".join(lines)
 
 
 def _run_live_smoke(path: Path, model: str) -> int:

@@ -1,5 +1,14 @@
 """Prototype primitives for structured endoscopy reports."""
 
+from .agent import (
+    DEFAULT_AGENT_MODEL,
+    ENDO_AGENT_INSTRUCTIONS,
+    EndoAgentPlan,
+    EndoAgentRun,
+    EndoIntent,
+    build_endo_agent,
+    run_endo_agent,
+)
 from .analytics import ReportStats, calculate_report_stats, render_report_stats
 from .models import (
     AnatomicalZone,
@@ -50,11 +59,16 @@ from .render import render_report
 __all__ = [
     "AnatomicalZone",
     "COLONOSCOPY_ZONES",
+    "DEFAULT_AGENT_MODEL",
     "EvalCase",
     "EvalResult",
     "EvalSummary",
+    "ENDO_AGENT_INSTRUCTIONS",
     "EXTRACTION_SYSTEM_PROMPT",
     "DEFAULT_OPENAI_MODEL",
+    "EndoAgentPlan",
+    "EndoAgentRun",
+    "EndoIntent",
     "EndoscopyReport",
     "EndoscopyExtractor",
     "EndoscopyType",
@@ -74,6 +88,7 @@ __all__ = [
     "ZONE_LABELS",
     "ZONE_SYNONYMS",
     "ZONES_BY_EXAM_TYPE",
+    "build_endo_agent",
     "build_eval_summary",
     "build_report_from_extraction",
     "build_extraction_user_prompt",
@@ -88,4 +103,5 @@ __all__ = [
     "render_eval_summary",
     "render_report",
     "render_report_stats",
+    "run_endo_agent",
 ]

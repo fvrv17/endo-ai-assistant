@@ -42,6 +42,7 @@ Backend engineering carried over:
 AI engineering added:
 
 - structured-output extraction with strict JSON schema;
+- a small Pydantic-AI intent router agent;
 - prompt contracts grounded in domain nomenclature;
 - evidence traceability for every extracted observation;
 - eval cases with precision/recall-style reporting;
@@ -57,6 +58,7 @@ AI engineering added:
 - Pydantic validation for enum consistency, plausible measurements, required
   text, and source evidence.
 - OpenAI structured-output adapter behind a provider-neutral interface.
+- Pydantic-AI agent that classifies user intent before extraction.
 - Offline synthetic extractor for deterministic demos and tests.
 - Deterministic Russian report renderer.
 - Review flags for fields a physician should verify.
@@ -107,6 +109,7 @@ selected exam type is rejected.
 ## Quick Demo
 
 ```bash
+# Python 3.10+
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 PYTHONPATH=src .venv/bin/python -m endo_ai_assistant.cli --demo --stats
@@ -154,6 +157,23 @@ http://127.0.0.1:8787
 
 The UI is deliberately simple. The important part of this project is the
 extraction pipeline, validation layer, deterministic renderer, and eval loop.
+
+## Pydantic-AI Agent
+
+The project includes a tiny Pydantic-AI intent router. It classifies the user's
+request as `structure_report`, `summarize_note`, or `out_of_scope`, returns a
+validated `EndoAgentPlan`, and only then lets the deterministic extraction
+pipeline build a report when appropriate.
+
+The agent does not generate clinical findings. This keeps the safety boundary
+intact: Pydantic-AI handles agentic routing and structured intent output, while
+the existing extraction, validation, and rendering code handles clinical data.
+
+```bash
+OPENAI_API_KEY=... PYTHONPATH=src .venv/bin/python -m endo_ai_assistant.cli \
+  --agent \
+  --demo
+```
 
 ## OpenAI Structured Output
 
@@ -258,6 +278,7 @@ PYTHONPATH=src:. .venv/bin/python -m unittest
 
 ```text
 src/endo_ai_assistant/
+  agent.py          Pydantic-AI intent router around the extraction pipeline
   models.py          domain enums, Pydantic models, validation rules
   nomenclature.py    labels and synonyms used in prompts and rendering
   extraction.py      extractor protocol and report-building boundary
