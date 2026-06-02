@@ -315,6 +315,11 @@ class EndoscopyReport(BaseModel):
                     f"zone {zone.zone.value} is not allowed for {self.exam_type.value}"
                 )
             for observation in zone.observations:
+                # Intentionally coarse first barrier: this catches many facts that
+                # are not grounded in the source, but it is not full span grounding.
+                # Known gaps: negated mentions still match, and punctuation/casing
+                # normalization can reject semantically valid evidence. The next
+                # step is span offsets plus a dedicated negation check.
                 evidence = observation.evidence_text.lower()
                 if evidence not in source:
                     raise ValueError(
