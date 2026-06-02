@@ -112,28 +112,28 @@ python3 -m venv .venv
 PYTHONPATH=src .venv/bin/python -m endo_ai_assistant.cli --demo --stats
 ```
 
-Example output:
+Example output, translated for README readability:
 
 ```text
-Исследование: ЭГДС
-Повод: не указано
+Study: Gastroscopy
+Indication: not specified
 
-Описание:
-- Антральный отдел: Эрозия с фибринозным налетом. Локализация: по малой кривизне. Размер: 3 мм.
-- Луковица ДПК: Язвенный дефект без признаков активного кровотечения. Локализация: не указана. Размер: 6 мм.
+Findings:
+- Antrum: Erosion with fibrin coating. Location: lesser curvature. Size: 3 mm.
+- Duodenal bulb: Ulcerative defect without signs of active bleeding. Location: not specified. Size: 6 mm.
 
-Поля для вычитки:
-- [warning] Луковица ДПК: Не указана точная локализация находки.
+Review flags:
+- [warning] Duodenal bulb: Exact finding location is missing.
 
-Статистика:
-- Зон с находками: 2
-- Всего находок: 2
-- По зонам:
-  - Антральный отдел: 1
-  - Луковица ДПК: 1
-- По типам:
-  - эрозия: 1
-  - язва: 1
+Statistics:
+- Zones with findings: 2
+- Total findings: 2
+- By zone:
+  - Antrum: 1
+  - Duodenal bulb: 1
+- By type:
+  - erosion: 1
+  - ulcer: 1
 ```
 
 Web prototype:
