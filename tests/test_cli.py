@@ -4,6 +4,7 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import patch
 
+from endo_ai_assistant import EndoAgentPlan, EndoAgentRun
 from endo_ai_assistant.dev_extractors import SyntheticGastroscopyExtractor
 from endo_ai_assistant.cli import main
 
@@ -91,6 +92,40 @@ class CliSmokeTest(unittest.TestCase):
         self.assertIn("Cases: 8/12 passed", stdout.getvalue())
         self.assertIn("Structural recall: 92.31%", stdout.getvalue())
         self.assertIn("Negation false-positives: 2", stdout.getvalue())
+
+    def test_agent_outputs_structured_plan(self) -> None:
+        stdout = io.StringIO()
+        agent_run = EndoAgentRun(
+            plan=EndoAgentPlan(
+                intent="summarize_note",
+                summary="The user wants a short summary.",
+                needs_extraction=False,
+                confidence=0.9,
+                safety_note="No clinical report should be produced.",
+            )
+        )
+
+        with patch("endo_ai_assistant.cli.run_endo_agent", return_value=agent_run):
+            with redirect_stdout(stdout):
+                exit_code = main(["--agent", "--text", "Summarize this note."])
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("Agent plan:", stdout.getvalue())
+        self.assertIn("Intent: summarize_note", stdout.getvalue())
+        self.assertIn("The user wants a short summary.", stdout.getvalue())
+
+    def test_agent_reports_setup_failure_without_traceback(self) -> None:
+        stderr = io.StringIO()
+
+        with patch(
+            "endo_ai_assistant.cli.run_endo_agent",
+            side_effect=RuntimeError("Missing credentials"),
+        ):
+            with redirect_stderr(stderr):
+                exit_code = main(["--agent", "--text", "Summarize this note."])
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("Agent run failed: Missing credentials", stderr.getvalue())
 
     def test_live_smoke_requires_openai_provider(self) -> None:
         stderr = io.StringIO()
