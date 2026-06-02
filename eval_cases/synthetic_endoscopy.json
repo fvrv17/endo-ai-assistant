@@ -4,13 +4,14 @@
     "raw_input": "ЭГДС. В антральном отделе желудка по малой кривизне эрозия до 3 мм, фибринозный налет. В луковице ДПК язвенный дефект 6 мм без признаков активного кровотечения.",
     "exam_type": "gastroscopy",
     "indication": null,
+    "tags": [],
     "expected_findings": [
       {
         "zone": "antrum",
         "observations": [
           {
             "type": "erosion",
-            "description": "эрозия с фибринозным налетом",
+            "description": "эрозивный дефект с фибринозным налетом",
             "location": "по малой кривизне",
             "size_mm": 3,
             "quantity": null,
@@ -23,7 +24,7 @@
         "observations": [
           {
             "type": "ulcer",
-            "description": "язвенный дефект без признаков активного кровотечения",
+            "description": "язва без признаков активного кровотечения",
             "location": null,
             "size_mm": 6,
             "quantity": null,
@@ -38,6 +39,7 @@
     "raw_input": "ЭГДС. Пищевод, желудок и луковица ДПК без патологических изменений.",
     "exam_type": "gastroscopy",
     "indication": null,
+    "tags": ["clean_study"],
     "expected_findings": []
   },
   {
@@ -45,6 +47,7 @@
     "raw_input": "ЭГДС. В антруме по малой кривизне две эрозии до 2 мм и полип 4 мм.",
     "exam_type": "gastroscopy",
     "indication": null,
+    "tags": [],
     "expected_findings": [
       {
         "zone": "antrum",
@@ -74,13 +77,14 @@
     "raw_input": "ЭГДС. В антральном отделе желудка эрозия с фибринозным налетом.",
     "exam_type": "gastroscopy",
     "indication": null,
+    "tags": [],
     "expected_findings": [
       {
         "zone": "antrum",
         "observations": [
           {
             "type": "erosion",
-            "description": "эрозия с фибринозным налетом",
+            "description": "эрозивный дефект с фибринозным налетом",
             "location": null,
             "size_mm": null,
             "quantity": null,
@@ -95,6 +99,7 @@
     "raw_input": "Колоноскопия. В прямой кишке полип 5 мм. В сигмовидной кишке полип 3 мм.",
     "exam_type": "colonoscopy",
     "indication": null,
+    "tags": [],
     "expected_findings": [
       {
         "zone": "rectum",
@@ -129,6 +134,7 @@
     "raw_input": "ЭГДС. В антруме эрозия до 4 мм.",
     "exam_type": "gastroscopy",
     "indication": null,
+    "tags": [],
     "expected_findings": [
       {
         "zone": "antrum",
@@ -140,6 +146,118 @@
             "size_mm": 4,
             "quantity": null,
             "evidence_text": "В антруме эрозия до 4 мм"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "egd_negated_erosion_001",
+    "raw_input": "ЭГДС. В антральном отделе желудка эрозий не выявлено.",
+    "exam_type": "gastroscopy",
+    "indication": null,
+    "tags": ["negation"],
+    "expected_findings": []
+  },
+  {
+    "case_id": "egd_clean_hallucination_guard_001",
+    "raw_input": "ЭГДС. В антруме слизистая без особенностей, язвенных дефектов не выявлено.",
+    "exam_type": "gastroscopy",
+    "indication": null,
+    "tags": ["clean_study", "negation"],
+    "expected_findings": []
+  },
+  {
+    "case_id": "egd_paraphrased_erosion_001",
+    "raw_input": "ЭГДС. В антральном отделе желудка эрозивный дефект до 3 мм.",
+    "exam_type": "gastroscopy",
+    "indication": null,
+    "tags": ["paraphrase"],
+    "expected_findings": [
+      {
+        "zone": "antrum",
+        "observations": [
+          {
+            "type": "erosion",
+            "description": "поверхностный дефект слизистой",
+            "location": null,
+            "size_mm": 3,
+            "quantity": null,
+            "evidence_text": "В антральном отделе желудка эрозивный дефект до 3 мм"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "colon_size_boundary_001",
+    "raw_input": "Колоноскопия. В прямой кишке полип 300 мм.",
+    "exam_type": "colonoscopy",
+    "indication": null,
+    "tags": ["size_boundary"],
+    "expected_findings": [
+      {
+        "zone": "rectum",
+        "observations": [
+          {
+            "type": "polyp",
+            "description": "полип",
+            "location": null,
+            "size_mm": 300,
+            "quantity": null,
+            "evidence_text": "В прямой кишке полип 300 мм"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "colon_duplicate_polyps_same_zone_001",
+    "raw_input": "Колоноскопия. В прямой кишке полип 4 мм и полип 7 мм.",
+    "exam_type": "colonoscopy",
+    "indication": null,
+    "tags": ["duplicates"],
+    "expected_findings": [
+      {
+        "zone": "rectum",
+        "observations": [
+          {
+            "type": "polyp",
+            "description": "полип",
+            "location": null,
+            "size_mm": 4,
+            "quantity": null,
+            "evidence_text": "В прямой кишке полип 4 мм и полип 7 мм"
+          },
+          {
+            "type": "polyp",
+            "description": "полип",
+            "location": null,
+            "size_mm": 7,
+            "quantity": null,
+            "evidence_text": "В прямой кишке полип 4 мм и полип 7 мм"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "case_id": "colon_polyp_size_source_ambiguity_001",
+    "raw_input": "Колоноскопия. В сигмовидной кишке полип на ножке 4 мм, головка 8 мм.",
+    "exam_type": "colonoscopy",
+    "indication": null,
+    "tags": ["size_ambiguity"],
+    "expected_findings": [
+      {
+        "zone": "sigmoid_colon",
+        "observations": [
+          {
+            "type": "polyp",
+            "description": "полип",
+            "location": null,
+            "size_mm": 8,
+            "quantity": null,
+            "evidence_text": "В сигмовидной кишке полип на ножке 4 мм, головка 8 мм"
           }
         ]
       }

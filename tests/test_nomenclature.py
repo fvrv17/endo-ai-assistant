@@ -3,7 +3,6 @@ import unittest
 from endo_ai_assistant import (
     AnatomicalZone,
     FindingType,
-    GastroscopyZone,
     ObservationType,
     OBSERVATION_LABELS,
     OBSERVATION_SYNONYMS,
@@ -17,7 +16,7 @@ class NomenclatureTest(unittest.TestCase):
     def test_real_zone_labels_and_synonyms_are_available(self) -> None:
         self.assertEqual(ZONE_LABELS[AnatomicalZone.ANTRUM], "Антральный отдел")
         self.assertIn("антрум", ZONE_SYNONYMS[AnatomicalZone.ANTRUM])
-        self.assertEqual(GastroscopyZone.ANTRUM.value, "antrum")
+        self.assertEqual(AnatomicalZone.ANTRUM.value, "antrum")
 
     def test_finding_type_alias_keeps_domain_name(self) -> None:
         self.assertIs(FindingType, ObservationType)

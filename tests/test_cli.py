@@ -88,7 +88,9 @@ class CliSmokeTest(unittest.TestCase):
 
         self.assertEqual(exit_code, 0)
         self.assertIn("Eval summary", stdout.getvalue())
-        self.assertIn("Cases: 6/6 passed", stdout.getvalue())
+        self.assertIn("Cases: 8/12 passed", stdout.getvalue())
+        self.assertIn("Structural recall: 92.31%", stdout.getvalue())
+        self.assertIn("Negation false-positives: 2", stdout.getvalue())
 
     def test_live_smoke_requires_openai_provider(self) -> None:
         stderr = io.StringIO()
@@ -122,7 +124,7 @@ class CliSmokeTest(unittest.TestCase):
         self.assertIn("Исследование: ЭГДС", stdout.getvalue())
         self.assertIn("Статистика:", stdout.getvalue())
         self.assertIn("Eval summary", stdout.getvalue())
-        self.assertIn("Cases: 6/6 passed", stdout.getvalue())
+        self.assertIn("Cases: 8/12 passed", stdout.getvalue())
 
     def test_live_smoke_reports_setup_failure_without_traceback(self) -> None:
         stderr = io.StringIO()

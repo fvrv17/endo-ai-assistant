@@ -1,5 +1,7 @@
 # Endo AI Assistant
 
+[![CI](https://github.com/fvrv17/endo-ai-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/fvrv17/endo-ai-assistant/actions/workflows/ci.yml)
+
 AI-assisted endoscopy report structuring prototype.
 
 This project turns a doctor's free-form endoscopy note into a typed, validated
@@ -59,7 +61,8 @@ AI engineering added:
 - Deterministic Russian report renderer.
 - Review flags for fields a physician should verify.
 - Local analytics by anatomical zone and finding type.
-- Synthetic eval harness with missing/extra observation diffs.
+- Synthetic eval harness with multi-axis metrics and missing/extra observation
+  diffs.
 - Minimal local web prototype for demo purposes.
 
 ## Architecture
@@ -91,6 +94,16 @@ model.
 - The output is a draft for physician review, not an autonomous conclusion.
 - Real patient data must not be sent to third-party APIs during development.
 
+Known limitation: the current `evidence_text in raw_input` check is an
+intentionally coarse first barrier. It catches many ungrounded facts, but it is
+not a full grounding system. Known gaps are negated mentions and normalization
+issues around punctuation/casing. The next step is span offsets plus a dedicated
+negation check.
+
+The test suite includes direct validation tests for the two highest-value safety
+rules: untraceable evidence is rejected, and an anatomical zone outside the
+selected exam type is rejected.
+
 ## Quick Demo
 
 ```bash
@@ -102,26 +115,30 @@ PYTHONPATH=src .venv/bin/python -m endo_ai_assistant.cli --demo --stats
 Example output:
 
 ```text
-Исследование: ЭГДС
-Повод: не указано
+Study: Gastroscopy
+Indication: not specified
 
-Описание:
-- Антральный отдел: Эрозия с фибринозным налетом. Локализация: по малой кривизне. Размер: 3 мм.
-- Луковица ДПК: Язвенный дефект без признаков активного кровотечения. Локализация: не указана. Размер: 6 мм.
+Findings:
+- Antrum: Erosion with fibrin coating. Location: lesser curvature. Size: 3 mm.
+- Duodenal bulb: Ulcerative defect without signs of active bleeding. Location: not specified. Size: 6 mm.
 
-Поля для вычитки:
-- [warning] Луковица ДПК: Не указана точная локализация находки.
+Review flags:
+- [warning] Duodenal bulb: Exact finding location is missing.
 
-Статистика:
-- Зон с находками: 2
-- Всего находок: 2
-- По зонам:
-  - Антральный отдел: 1
-  - Луковица ДПК: 1
-- По типам:
-  - эрозия: 1
-  - язва: 1
+Statistics:
+- Zones with findings: 2
+- Total findings: 2
+- By zone:
+  - Antrum: 1
+  - Duodenal bulb: 1
+- By type:
+  - erosion: 1
+  - ulcer: 1
 ```
+
+Web prototype:
+
+![Endo AI Assistant local web prototype](docs/demo-screenshot.png)
 
 ## Local Web Prototype
 
@@ -170,13 +187,29 @@ Current result:
 
 ```text
 Eval summary
-Cases: 6/6 passed
-Observation recall: 100.00%
-Observation precision: 100.00%
+Cases: 8/12 passed
+Structural recall: 92.31%
+Structural precision: 85.71%
+Size within +/-2 mm: 90.91% (10/11)
+Normalized text match: 66.67% (8/12)
+Negation false-positives: 2
 ```
 
-The eval output includes missing and extra observation diffs when a case fails,
-so provider regressions can be inspected without reading raw JSON.
+The eval is deliberately not perfect. It includes hard cases for negation,
+paraphrasing, a size boundary, duplicated findings in the same zone, and a clean
+study where the extractor must not hallucinate a pathology.
+
+Matching is split into separate axes:
+
+- Structural match: exact `zone + finding_type`.
+- Size match: compared only after structural matching, with `+/-2 mm` tolerance.
+- Text match: normalized description equality, reported as a diagnostic signal
+  but not used as a case pass/fail gate.
+- Negation false-positives: reported separately for cases tagged as negation.
+
+The eval output includes missing and extra structural diffs, size mismatches, and
+text mismatches, so provider regressions can be inspected without reading raw
+JSON.
 
 Run a live smoke test against the provider using only synthetic eval data:
 
@@ -238,12 +271,16 @@ src/endo_ai_assistant/
   web_app.py         minimal local HTTP UI
 tests/               unit tests for schemas, rendering, eval, CLI, web response
 eval_cases/          synthetic eval set, no patient data
+.github/workflows/   CI for compile, unit tests, and synthetic eval reporting
+docs/                README screenshots and demo assets
 ```
 
 ## Roadmap
 
 - Replace synthetic eval cases with de-identified expert-reviewed examples.
 - Add provider A/B evaluation for single-pass vs multi-pass extraction.
+- Replace substring-only evidence checks with source span offsets and a
+  dedicated negation detector.
 - Add RAG for wording suggestions only, not for clinical fact generation.
 - Add Docker packaging and basic latency/token/error monitoring.
 - Explore self-hosted open-weight inference for hospital-network deployment.
