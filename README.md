@@ -112,7 +112,7 @@ python3 -m venv .venv
 PYTHONPATH=src .venv/bin/python -m endo_ai_assistant.cli --demo --stats
 ```
 
-Example output, translated for README readability:
+Example output:
 
 ```text
 Study: Gastroscopy
