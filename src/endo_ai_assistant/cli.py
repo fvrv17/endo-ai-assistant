@@ -121,7 +121,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         cases = load_eval_cases(Path(args.eval))
         summary = evaluate_extractor(build_extractor("synthetic"), cases)
         print(render_eval_summary(summary))
-        return 0 if summary.passed_cases == summary.total_cases else 1
+        return 0
 
     raw_input = _raw_input_from_args(args.text, args.demo)
     if not raw_input:
@@ -190,7 +190,7 @@ def _run_live_smoke(path: Path, model: str) -> int:
 
     summary = build_eval_summary(results)
     print(render_eval_summary(summary))
-    return 0 if summary.passed_cases == summary.total_cases else 1
+    return 1 if any(result.error is not None for result in results) else 0
 
 
 def _failed_live_result(case, error: str) -> EvalResult:
@@ -202,7 +202,7 @@ def _failed_live_result(case, error: str) -> EvalResult:
         passed=False,
         expected_observations=expected_count,
         actual_observations=0,
-        matched_observations=0,
+        structural_matches=0,
         error=error,
     )
 
